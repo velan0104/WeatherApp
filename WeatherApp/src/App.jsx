@@ -9,7 +9,8 @@ function App() {
   const [name, setName] = useState("");
   const [cordinates, setCordinates] = useState([]);
   const [temp, setTemp] = useState("");
-  const [today,setToday] = useState({});
+  const [today,setToday] = useState("");
+  const [input , setInput] = useState("");
 
 
   const handleKeyUp = (e) =>{
@@ -17,6 +18,7 @@ function App() {
         if(name == ""){
             alert("Please enter the name")
         }
+        setInput(name.charAt(0).toUpperCase() + name.slice(1,name.length).toLowerCase());
         getData();
         currTemp();
     }
@@ -51,7 +53,8 @@ function App() {
   };
 
   const currTemp = async() =>{
-      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${name}&appid=318343aa3e7ebfcc0a606fa6ed31ed65`;
+    if(cordinates.length > 0){
+      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cordinates[0].state}&appid=318343aa3e7ebfcc0a606fa6ed31ed65`;
       try{
         const response = await fetch(apiUrl);
         const data = await response.json();
@@ -59,9 +62,9 @@ function App() {
         console.log(data);
       }catch(error){
         console.log("error");
-        setName("Mumbai");
-        setToday({});
+        setToday("");
       }
+    }
   }
 
   useEffect(() => {
@@ -70,7 +73,7 @@ function App() {
       console.log(cordinates[0].lat);
       console.log(cordinates[0].lon);
       getTemp();
-      
+      currTemp();
     } else {
       console.log("enter name please");
     }
@@ -85,7 +88,7 @@ function App() {
 
   return (
     <>
-    <WeatherContext.Provider value = {{name,setName,temp,setTemp,cordinates,setCordinates,getData,handleKeyUp,today}}>
+    <WeatherContext.Provider value = {{name,setName,temp,setTemp,cordinates,setCordinates,getData,handleKeyUp,today,input}}>
         <Layout/>
     </WeatherContext.Provider>
     </>

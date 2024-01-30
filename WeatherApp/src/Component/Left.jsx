@@ -3,10 +3,12 @@ import { useState, useContext } from 'react';
 import sun from '../Images/sun.png'
 import snow from '../Images/snow.png'
 import rain from '../Images/rain.png'
+import mist from '../Images/mist.png'
 import WeatherContext from "../Context/WeatherContext";
+
 const Left = () =>{
     const [city,setCity] = useState("");
-    const {handleKeyUp,setName,cordinates,name,temp,today} = useContext(WeatherContext);
+    const {handleKeyUp,setName,cordinates,name,temp,today,input} = useContext(WeatherContext);
     const [temperature,setTemperature] = useState({temp: '12',desc: 'Mostly Cloudly'});
     const [location,setLocation] = useState({city: "Mumbai" ,state: 'Maharashtra',country: 'India'});
     const [img,setImg] = useState(sun);
@@ -46,7 +48,7 @@ const Left = () =>{
 
     useEffect(() =>{
         if(temp.length != 0){
-            setTemperature({temp: temp.list[0].main.temp , desc: temp.list[0].weather[0].description})
+            setTemperature({temp: Math.round(temp.list[0].main.temp - 273.15), desc: temp.list[0].weather[0].description})
         }
     },[temp])
 
@@ -59,8 +61,9 @@ const Left = () =>{
 
 
         <>
-            <div className = "rounded-lg bg-transparent shadow-2xl shadow-white h-[95vh] w-full p-5 space-y-5 flex-col text-white ">
-                <div className = "flex bg-white rounded-full h-10">
+            <div className = " p-5 flex text-white bg-transparent rounded-lg shadow-2xl shadow-white lg:h-[95vh]  lg:w-full space-y-5 flex-col md:w-fit sm:w-96 sm:mx-auto">
+                <div>
+                <div className = "flex bg-white rounded-full h-10 sm:mb-5">
                     <span className="material-symbols-outlined my-auto px-2 text-gray-400"> search </span>
                     <input 
                         type = "text"
@@ -72,10 +75,11 @@ const Left = () =>{
                     />
                 </div>
                 
-                <div className="text-3xl px-7"> {location.city} </div>
+                <div className="text-3xl px-7"> {input} </div>
                 <img src = {img} className = " w-2/3 text-center mx-auto"/>
+                </div>
                 <div className="px-7 space-y-5">
-                    <div className="text-5xl"> {temperature.temp} <sup>o</sup>C</div>
+                    <div className="text-5xl"> {temperature.temp}<sup>o</sup>C</div>
                     <div className="text-2xl">{day} {time}</div>
                     <div className="text-2xl"><span className="material-symbols-outlined text-3xl align-middle"> partly_cloudy_day</span>{temperature.desc}</div>
                     <div className="text-2xl"><span className="material-symbols-outlined text-2xl align-middle">location_on</span>{location.state} , {location.country} </div>

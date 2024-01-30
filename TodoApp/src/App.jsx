@@ -43,7 +43,7 @@ function App() {
   return (
     <>
       <TodoProvider value = {{todos,addTodo,updateTodo,deleteTodo,toggleCompleted}}>
-         <div className='bg-[#232423] min-h-screen py-8 dark:bg-red-500 dark: color-red-500'>
+         <div className='bg-[#232423] min-h-screen py-8 '>
          <button onClick = {changeTheme}><span className ="material-symbols-outlined bg-white text-green-500 p-3 rounded-full relative translate-x-full translate-y-2 cursor-pointer"> light_mode </span></button>
             <div className='w-full max-w-2xl mx-auto shadow-md rounded-lg px-4 py-3 text-white'>
               <h1 className = "text-2xl font-bold text-center mb-8 mt-2">
