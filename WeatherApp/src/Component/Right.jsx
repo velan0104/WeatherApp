@@ -10,7 +10,7 @@ const Right = () =>{
 
     const{temp,today} = useContext(WeatherContext);
     const [Today,setToday] = useState({time: '12:00',min:'10',max:'20'});
-    const [highlights,setHighlights] = useState({humidity : '--' , AirSpeed: '--', GroundLvl: '--',AirPressure: '--', FeelsLike: '--'});
+    const [highlights,setHighlights] = useState({humidity : '--' , AirSpeed: '--', GroundLvl: '--',AirPressure: '--', visibility: '--'});
     const [sunTime, setSunTime] = useState({sunRise: '--',sunSet:'--'});
 
     useEffect(() =>{
@@ -21,7 +21,7 @@ const Right = () =>{
             const date = new Date(currTime);
             const cTime = date.toLocaleTimeString('en-US',{hour: '2-digit',minute: '2-digit',hour12: false});
             setToday({time: cTime, min: Math.round((temp.list[0].main.temp_min) - 273.15) , max: Math.round((temp.list[0].main.temp_max) - 273.15)})
-            setHighlights({humidity: `${temp.list[0].main.humidity}%`,AirSpeed: `${temp.list[0].wind.speed} m/s`, GroundLvl: temp.list[0].main.grnd_level, AirPressure: `${temp.list[0].main.pressure} hPa`, FeelsLike: `${(temp.list[0].visibility) /1000} Km/h`});
+            setHighlights({humidity: `${temp.list[0].main.humidity}%`,AirSpeed: `${temp.list[0].wind.speed} m/s`, GroundLvl: temp.list[0].main.grnd_level, AirPressure: `${temp.list[0].main.pressure} hPa`, visibility: `${(temp.list[0].visibility) /1000} Km/h`});
 
             if(typeof today == 'object'){
                 if(today.hasOwnProperty('sys')){
@@ -41,6 +41,10 @@ const Right = () =>{
                 }else{
                     setSunTime({sunRise: '--',sunSet: '--'});
                 }
+            }
+
+            else{
+                setHighlights({humidity:"--",AirSpeed:"--",GroundLvl:"--",AirPressure:"--",visibility:"--"})
             }
 
         
@@ -90,7 +94,7 @@ const Right = () =>{
                         <Bottom heading = "Air speed" data = {highlights.AirSpeed} />
                         <Bottom heading = "Ground lvl" data = {highlights.GroundLvl}/>
                         <Bottom heading = "Air pressure" data = {highlights.AirPressure}/>
-                        <Bottom heading = "Visibility" data = {highlights.FeelsLike}/>
+                        <Bottom heading = "Visibility" data = {highlights.visibility}/>
                     </div>
                 </div>
                
@@ -104,7 +108,6 @@ const Right = () =>{
                         key={index}
                         time={setDate(hourlyData.dt_txt)}
                         img={sun} 
-                         // Use the actual time from your data
                         min={Math.round(hourlyData.main.temp_min - 273.15)}
                         max={Math.round(hourlyData.main.temp_max - 273.15)}
                         />

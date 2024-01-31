@@ -9,8 +9,8 @@ import WeatherContext from "../Context/WeatherContext";
 const Left = () =>{
     const [city,setCity] = useState("");
     const {handleKeyUp,setName,cordinates,name,temp,today,input} = useContext(WeatherContext);
-    const [temperature,setTemperature] = useState({temp: '12',desc: 'Mostly Cloudly'});
-    const [location,setLocation] = useState({city: "Mumbai" ,state: 'Maharashtra',country: 'India'});
+    const [temperature,setTemperature] = useState({temp: '--',desc: '--'});
+    const [location,setLocation] = useState({city: "--" ,state: '--',country: '--'});
     const [img,setImg] = useState(sun);
 
     useEffect(() =>{
@@ -44,11 +44,16 @@ const Left = () =>{
         setLocation({city: cordinates[0].name, state: cordinates[0].state, country : cordinates[0].country})
         console.log(temperature.deg);
         }
+        else{
+            setLocation({city: "--", state: "--", country : "--"})
+        }
     },[cordinates])
 
     useEffect(() =>{
         if(temp.length != 0){
             setTemperature({temp: Math.round(temp.list[0].main.temp - 273.15), desc: temp.list[0].weather[0].description})
+        }else{
+            setTemperature({temp: "--", desc: "--"});
         }
     },[temp])
 

@@ -5,13 +5,43 @@ import Input from './Component/Input';
 
 import Layout from './Component/Layout';
 function App() {
-  
+
   const [name, setName] = useState("");
   const [cordinates, setCordinates] = useState([]);
   const [temp, setTemp] = useState("");
   const [today,setToday] = useState("");
   const [input , setInput] = useState("");
+  const [location,setLocation] = useState({lat: '', lon:''});
 
+  useEffect(() =>{
+    const getCurrentPosition = () =>{
+      return new Promise((resolve,reject) =>{
+        navigator.geolocation.getCurrentPosition(
+          (position) =>{
+            resolve(position.coords);
+          },
+          (error) =>{
+            reject(error.message);
+          }
+        )
+      });
+    }
+
+    const fetchData = async() =>{
+      try{
+        if(navigator.geolocation){
+          const position = await getCurrentPosition();
+          const {latitude,longitude} = position;
+          setLocation({lat:latitude,lon:longitude});
+        }
+      }catch(error){
+        console.log(error);
+      }
+    }
+
+    fetchData();
+  },[])
+  
 
   const handleKeyUp = (e) =>{
     if(name != "" && e.key == 'Enter'){
@@ -32,6 +62,7 @@ function App() {
       const response = await fetch(apiUrl);
       const data = await response.json();
       setCordinates(data);
+      setLocation({lat: data[0].lat, lon: data[0].lon})
       console.log(data);
     } catch (error) {
       console.log('Error:', error);
@@ -41,7 +72,9 @@ function App() {
 
   const getTemp = async () => {
     if (cordinates.length > 0) {
-      const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${cordinates[0].lat}&lon=${cordinates[0].lon}&appid=318343aa3e7ebfcc0a606fa6ed31ed65`;
+         
+      console.log("Latitude: " + location.lat + "    " + ", Longitude: " + location.lon);
+      const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${location.lat}&lon=${location.lon}&appid=318343aa3e7ebfcc0a606fa6ed31ed65`;
       try {
         const response = await fetch(apiUrl);
         const data = await response.json();
@@ -79,11 +112,8 @@ function App() {
     }
   }, [cordinates]);
 
-  useEffect(() => {
-    if (typeof temp === 'object') {
-      console.log(temp.list[0].main.temp);
-    }
-  }, [temp]);
+
+
 
 
   return (
