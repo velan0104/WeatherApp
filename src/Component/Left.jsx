@@ -4,6 +4,7 @@ import sun from '../Images/sun.png'
 import snow from '../Images/snow.png'
 import rain from '../Images/rain.png'
 import mist from '../Images/mist.png'
+import search from '../Images/search2.png'
 import WeatherContext from "../Context/WeatherContext";
 
 const Left = () =>{
@@ -11,7 +12,8 @@ const Left = () =>{
     const {handleKeyUp,setName,cordinates,name,temp,today,input} = useContext(WeatherContext);
     const [temperature,setTemperature] = useState({temp: '--',desc: '--'});
     const [location,setLocation] = useState({city: "--" ,state: '--',country: '--'});
-    const [img,setImg] = useState(sun);
+    const [img,setImg] = useState(search);
+
 
     useEffect(() =>{
         if(temp != 0){
@@ -46,6 +48,7 @@ const Left = () =>{
         }
         else{
             setLocation({city: "--", state: "--", country : "--"})
+            setImg(search)
         }
     },[cordinates])
 
@@ -66,14 +69,13 @@ const Left = () =>{
 
 
         <>
-            <div className = " p-5 flex text-white bg-transparent rounded-lg shadow-2xl shadow-white lg:h-[95vh]  lg:w-full space-y-5 flex-col md:w-fit sm:w-96 sm:mx-auto">
-                <div>
-                <div className = "flex bg-white rounded-full h-10 sm:mb-5">
-                    <span className="material-symbols-outlined my-auto px-2 text-gray-400"> search </span>
+            <div className = " p-5 flex text-white bg-green-500 rounded-lg shadow-2xl shadow-white lg:h-[95vh]  lg:w-full space-y-5 flex-col md:w-fit sm:w-96 sm:mx-auto">
+                <div className = "flex bg-white rounded-full h-10 sm:mb-5 border-gray-200 border-2">
+                    <span className="material-symbols-outlined my-auto px-2 text-gray-400 "> search </span>
                     <input 
                         type = "text"
                         placeholder = "Enter city name..."
-                        className = " w-full m-2 h-fit focus:outline-none text-gray-700"
+                        className = " w-full m-2 h-fit focus:outline-none text-gray-700 "
                         value = {city}
                         onChange = {(e) => setCity(e.target.value)}
                         onKeyUp = {handleKeyUp}
@@ -82,14 +84,15 @@ const Left = () =>{
                 
                 <div className="text-3xl px-7"> {input} </div>
                 <img src = {img} className = " w-2/3 text-center mx-auto"/>
-                </div>
+                {(!city)?
+                (<div className = "m-auto text-3xl"> Search for city name </div>):
+                (
                 <div className="px-7 space-y-5">
                     <div className="text-5xl"> {temperature.temp}<sup>o</sup>C</div>
                     <div className="text-2xl">{day} {time}</div>
                     <div className="text-2xl"><span className="material-symbols-outlined text-3xl align-middle"> partly_cloudy_day</span>{temperature.desc}</div>
                     <div className="text-2xl"><span className="material-symbols-outlined text-2xl align-middle">location_on</span>{location.state} , {location.country} </div>
-                </div>
-                
+                </div>)}
             </div>
         </>
     )

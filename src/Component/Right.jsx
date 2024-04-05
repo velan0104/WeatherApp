@@ -1,10 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
 import {Todays,Bottom,Week}  from './RightComponent'
 import WeatherContext from "../Context/WeatherContext";
-import sun from '../Images/sun.png'
-import snow from '../Images/snow.png'
-import rain from '../Images/rain.png'
-import mist from '../Images/mist.png'
+import DataNotFound from '../Images/DataNotFound.png';
+import mist from '../Images/mist.png';
+import rain from '../Images/rain.png';
+import snow from '../Images/snow.png';
+import sun from '../Images/sun.png';
 
 const Right = () =>{
 
@@ -12,11 +13,14 @@ const Right = () =>{
     const [Today,setToday] = useState({time: '12:00',min:'10',max:'20'});
     const [highlights,setHighlights] = useState({humidity : '--' , AirSpeed: '--', GroundLvl: '--',AirPressure: '--', visibility: '--'});
     const [sunTime, setSunTime] = useState({sunRise: '--',sunSet:'--'});
+    const [data,setData] = useState([]);
 
     useEffect(() =>{
         let isValid = false;
         if(temp.length != 0){
             console.log(today)
+            setData(HourlyData(temp));
+            console.log(data);
             const currTime = temp.list[0].dt_txt;
             const date = new Date(currTime);
             const cTime = date.toLocaleTimeString('en-US',{hour: '2-digit',minute: '2-digit',hour12: false});
@@ -54,23 +58,57 @@ const Right = () =>{
 
     function setDate(curr){
         const date = new Date(curr);
-        return date.toLocaleTimeString('en-US',{year: '2-digit',month:'2-digit',day:'numeric',hour:'2-digit',minute:'2-digit'});
+        return date.toLocaleTimeString('en-US',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     }
 
-    function setImg(type){
-        console.log(type)
-        if(type === 'Clouds'){
-           return "snow";
+    function icons(curr){
+        if(curr === 'Clouds'){
+            return "cloudy_snowing";
+        }else if(curr === 'Mist'){
+            return "Mist";
+        }else if(curr === 'Rain'){
+            return 'Rainy';
+        }else{
+            return "Sunny";
         }
-        else if(type === 'Mist'){
-            return {mist}
+
+    }
+
+    function image(curr){
+        if(curr === 'Clouds'){
+            return snow;
+        }else if(curr === 'Mist'){
+            return mist;
+        }else if(curr === 'Rain'){
+            return rain;
+        }else{
+            return sun;
         }
-        else if(type === 'Rain'){
-            return {rain}
+
+    }
+
+    function HourlyData(temp){
+        const tempData = [];
+        let tempArr = temp.list;
+        const distinctDate = new Set();
+
+        for(let i = 0; i < tempArr.length; i++){
+            let date = tempArr[i].dt_txt;
+            const dateObj = new Date(date);
+            let formatDate = dateObj.toLocaleDateString('en-US',{day:'numeric',month:'short'})
+            distinctDate.add(formatDate)
         }
-        else{
-           return {sun};
+
+        for(let i = 0; i < tempArr.length; i++){
+            let date = tempArr[i].dt_txt;
+            const dateObj = new Date(date);
+            let formatDate = dateObj.toLocaleDateString('en-US',{day:'numeric',month:'short'});
+            if(distinctDate.has(formatDate)){
+                tempData.push({date: formatDate, type: tempArr[i].weather[0].main,min: Math.round(tempArr[i].main.temp_min - 273.15),max: Math.round(tempArr[i].main.temp_max - 273.15)})
+                distinctDate.delete(formatDate);
+            }
         }
+        return tempData.slice(1,tempData.length);
     }
 
     
@@ -78,16 +116,26 @@ const Right = () =>{
         <>
             <div className="h-[95vh] w-full p-5 text-white text-2xl flex lg:flex-row sm:flex-col">
                 <div className="lg:w-2/3">
-                    <h1 className = "pb-4"> Hourly Report </h1> 
-                    <div className="flex flex-row lg:h-fit w-full space-x-3 sm:w-36 sm:mb-10">
-                        <Todays time = {Today.time} min = {Today.min} max = {Today.max}/>
-                        <Todays time = "Monday" min = "10" max = "30"/>
-                        <Todays time = "Monday" min = "10" max = "30"/>
-                        <Todays time = "Monday" min = "10" max = "30"/>
-                        <Todays time = "Monday" min = "10" max = "30"/>
+                    <h1 className = "pb-4 text-white"> Weekly Report </h1> 
+                    <div className="flex flex-row lg:h-fit min-w-full space-x-3 sm:w-36 sm:mb-10 overflow-x-auto m-auto">
+                        { (data.length > 0)?
+                            data.map((hourlyData,index) => (
+                                <Todays
+                                key = {index}
+                                img = {image(hourlyData.type)}
+                                time = {hourlyData.date} 
+                                min = {hourlyData.min} 
+                                max = {hourlyData.max}
+                                />
+                            )):
+                            <div className = "">
+                                <img src = {DataNotFound} height = "120px" width = "100px" alt = "Data Not Found"/>
+                                <p>Please enter the city name</p>
+                            </div>
+                        }
                     </div>
 
-                    <h1 className="sm:mb-5 lg:mb-1"> Today Highlights</h1>
+                    <h1 className="sm:mb-5 lg:mb-1 text-white"> Today Highlights</h1>
                     <div className = "flex flex-wrap flex-row justify-around w-fit">
                         <Bottom heading = "Humidity" data = {highlights.humidity}/>
                         <Bottom heading = {sunTime.sunRise} data = {sunTime.sunSet} />
@@ -99,15 +147,16 @@ const Right = () =>{
                 </div>
                
 
-                <div className = "ml-4 lg:w-1/3 h-full w-full space-y-8">
-                    <h1> 24 Hours Forecast</h1>
-                    <div className="bg-blue-500 h-4/5 rounded-xl p-5 overflow-y-scroll webkit-scroll">
+                <div className = "ml-4 lg:w-1/3 h-full w-full space-y-2">
+                    <h1 className = "text-white"> 24 Hours Forecast</h1>
+                    <div className="bg-green-500 h-4/5 rounded-xl p-5 overflow-y-auto webkit-scroll">
                     {(temp != 0 ) ?
                         temp.list.slice(0, 8).map((hourlyData, index) => (
                         <Week
                         key={index}
                         time={setDate(hourlyData.dt_txt)}
-                        img={sun} 
+                        img={image(hourlyData.weather[0].main)} 
+                        type = {hourlyData.weather[0].main}
                         min={Math.round(hourlyData.main.temp_min - 273.15)}
                         max={Math.round(hourlyData.main.temp_max - 273.15)}
                         />

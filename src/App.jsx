@@ -1,7 +1,6 @@
 import './App.css'
 import WeatherContext from './Context/WeatherContext'
 import {useState,useEffect} from 'react';
-import Input from './Component/Input';
 
 import Layout from './Component/Layout';
 function App() {

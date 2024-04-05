@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import WeatherContext from '../Context/WeatherContext';
 
 const Data = ({ children }) => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState("Mumbai");
   const [cordinates, setCordinates] = useState([]);
   const [temp, setTemp] = useState("");
+
+  useEffect( ()=>{
+    setName("Mumbai")
+  },[])
 
   const getData = async () => {
     const apiUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${name}&appid=318343aa3e7ebfcc0a606fa6ed31ed65`;
